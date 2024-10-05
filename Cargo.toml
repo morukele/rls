@@ -2,3 +2,7 @@
 name = "rls"
 version = "0.1.0"
 edition = "2021"
+
+[dependencies]
+users = "0.11.0"
+chrono = "0.4"

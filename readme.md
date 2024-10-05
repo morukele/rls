@@ -13,9 +13,9 @@ A Rust implementation of the classic Unix `ls` command.
 The goal is to implement the following `ls` options:
 
 - [x] `rls`: List all non-hidden files and directories in the current directory
-- [ ] `rls -a`: List all files and directories, including hidden ones
+- [x] `rls -a`: List all files and directories, including hidden ones
 - [ ] `rls -A`: List all files and directories except `.` and `..`
-- [ ] `rls -l`: Use long listing format
+- [x] `rls -l`: Use long listing format
 - [ ] `rls -h`: Print sizes in human-readable format (e.g., 1K, 234M, 2G)
 - [ ] `rls -R`: List subdirectories recursively
 - [ ] `rls -d`: List directories themselves, not their contents
@@ -36,9 +36,9 @@ The following roadmap outlines the planned development stages for the `rls` proj
 
 - 🚀 In Progress, ✅ Completed, 🔜 Planned, 🔄 Under Review
 
-1. 🔄 Implement basic file listing functionality
-2. 🚀 Add support for command-line arguments
-3. 🔜 Implement sorting options
+1. ✅ Implement basic file listing functionality
+2. ✅ Add support for command-line arguments
+3. 🚀 Implement sorting options
 4. 🔜 Add support for different output formats
 5. 🔜 Implement advanced features (recursive listing, colorization, etc.)
 6. 🔜 Optimize performance

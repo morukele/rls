@@ -48,9 +48,7 @@ fn main() {
         }
     }
 
-    println!("options: {:#?}", options);
-
-    match list_all(directory_path, options) {
+    match list_all(&directory_path, &options) {
         Ok(()) => {}
         Err(e) => eprintln!("Error listing directory: {}", e),
     };
