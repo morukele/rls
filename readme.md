@@ -38,7 +38,7 @@ The following roadmap outlines the planned development stages for the `rls` proj
 
 - 🚀 In Progress, ✅ Completed, 🔜 Planned, 🔄 Under Review
 
-1. ✅ Implement basic file listing functionality
+1. 🔄 Implement basic file listing functionality
 2. 🚀 Add support for command-line arguments
 3. 🔜 Implement sorting options
 4. 🔜 Add support for different output formats
