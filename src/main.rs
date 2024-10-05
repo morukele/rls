@@ -1,13 +1,38 @@
 use std::{env, fs, path::PathBuf};
 
+#[derive(Default, Debug)]
+struct Options {
+    show_all: bool,
+    long_format: bool,
+    almost_all: bool,
+    human_readable: bool,
+    recursive: bool,
+    directory: bool,
+    reverse: bool,
+    size_sort: bool, // Sort file by size, largest first
+    time_sort: bool, // Sort file by modification time, newest first
+    alphabetic_sort: bool,
+    one_file_per_line: bool,
+    color_when: bool,
+    classify: bool,
+    inode: bool,
+    numeric_uid_gid: bool,
+    append_indicator: bool,
+}
+
+impl Options {
+    fn new() -> Self {
+        Options::default()
+    }
+}
+
 fn main() {
     // Collect arguments
     let args: Vec<String> = env::args().collect();
-    let mut show_all = false;
-    let mut long_format = false;
+    let mut options = Options::new();
 
     //: Get the current working directory
-    let dir = match env::current_dir() {
+    let directory_path = match env::current_dir() {
         Ok(path) => path,
         Err(e) => {
             eprintln!("Failed to get current directory: {}", e);
@@ -19,13 +44,32 @@ fn main() {
     // skipping the first argument because it is the program name
     for arg in &args[1..] {
         match arg.as_str() {
-            "-a" => show_all = true,
-            "-l" => long_format = true,
-            _ => println!("Unknown option: {}", arg),
+            "-a" => options.show_all = true,
+            "-l" => options.long_format = true,
+            "-A" => options.almost_all = true,
+            "-h" => options.human_readable = true,
+            "-R" => options.recursive = true,
+            "-d" => options.directory = true,
+            "-r" => options.reverse = true,
+            "-S" => options.size_sort = true,
+            "-t" => options.time_sort = true,
+            "-X" => options.alphabetic_sort = true,
+            "-1" => options.one_file_per_line = true,
+            "--color[=when]" => options.color_when = true,
+            "-F" => options.classify = true,
+            "-i" => options.inode = true,
+            "-n" => options.numeric_uid_gid = true,
+            "-p" => options.append_indicator = true,
+            _ => println!(
+                "Unknown option: {}, listing all non hidden files and directories",
+                arg
+            ),
         }
     }
 
-    match list_all(dir, show_all) {
+    println!("options: {:#?}", options);
+
+    match list_all(directory_path, options) {
         Ok(()) => {}
         Err(e) => eprintln!("Error listing directory: {}", e),
     };
@@ -41,8 +85,8 @@ fn main() {
 /// # Output
 ///
 /// Result of unit type `()` is successful or `std::io::Error` if operation fails.
-fn list_all(path: PathBuf, show_all: bool) -> Result<(), std::io::Error> {
-    let entries = fs::read_dir(path)?; // propagate error to the function
+fn list_all(directory_path: PathBuf, options: Options) -> Result<(), std::io::Error> {
+    let entries = fs::read_dir(directory_path)?; // propagate error to the function
 
     // iterate through all entries
     for entry in entries {
@@ -54,7 +98,7 @@ fn list_all(path: PathBuf, show_all: bool) -> Result<(), std::io::Error> {
             .to_owned();
 
         // Skip hidden files if not specified
-        if !show_all && entry_name.starts_with(".") {
+        if !options.show_all && entry_name.starts_with(".") {
             continue;
         }
 

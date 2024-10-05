@@ -13,24 +13,22 @@ A Rust implementation of the classic Unix `ls` command.
 The goal is to implement the following `ls` options:
 
 - [x] `rls`: List all non-hidden files and directories in the current directory
-- [ ] `rls -a`, `rls --all`: List all files and directories, including hidden ones
-- [ ] `rls -A`, `rls --almost-all`: List all files and directories except `.` and `..`
+- [ ] `rls -a`: List all files and directories, including hidden ones
+- [ ] `rls -A`: List all files and directories except `.` and `..`
 - [ ] `rls -l`: Use long listing format
-- [ ] `rls -h`, `rls --human-readable`: Print sizes in human-readable format (e.g., 1K, 234M, 2G)
-- [ ] `rls -R`, `rls --recursive`: List subdirectories recursively
-- [ ] `rls -d`, `rls --directory`: List directories themselves, not their contents
-- [ ] `rls -r`, `rls --reverse`: Reverse order while sorting
+- [ ] `rls -h`: Print sizes in human-readable format (e.g., 1K, 234M, 2G)
+- [ ] `rls -R`: List subdirectories recursively
+- [ ] `rls -d`: List directories themselves, not their contents
+- [ ] `rls -r`: Reverse order while sorting
 - [ ] `rls -S`: Sort by file size, largest first
 - [ ] `rls -t`: Sort by modification time, newest first
 - [ ] `rls -X`: Sort alphabetically by entry extension
 - [ ] `rls -1`: List one file per line
 - [ ] `rls --color[=WHEN]`: Colorize the output; WHEN can be 'always', 'auto', or 'never'
-- [ ] `rls -F`, `rls --classify`: Append indicator (one of */=>@|) to entries
-- [ ] `rls -i`, `rls --inode`: Print the index number of each file
-- [ ] `rls -n`, `rls --numeric-uid-gid`: List numeric user and group IDs
+- [ ] `rls -F`: Append indicator (one of */=>@|) to entries
+- [ ] `rls -i`: Print the index number of each file
+- [ ] `rls -n`: List numeric user and group IDs
 - [ ] `rls -p`: Append / indicator to directories
-- [ ] `rls -q`, `rls --hide-control-chars`: Print ? instead of non-graphic characters
-- [ ] `rls --group-directories-first`: Group directories before files
 
 ## Roadmap
 
