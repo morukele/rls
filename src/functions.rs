@@ -46,15 +46,11 @@ pub fn list_all(directory_path: &PathBuf, options: &Options) -> Result<(), std::
     // iterate through all entries
     for entry in entries {
         let entry = entry?;
-        let entry_name = entry
-            .file_name()
-            .to_str()
-            .expect("OS String cannot be converted to String")
-            .to_owned();
+        let entry_name = entry.file_name().to_string_lossy().into_owned();
         let metadata = entry.metadata()?; // extract file metadata
 
         // Skip hidden files if not specified
-        if !options.show_all && entry_name.starts_with(".") {
+        if (!options.show_all || options.almost_all) && entry_name.starts_with(".") {
             continue;
         }
 

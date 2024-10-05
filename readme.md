@@ -14,7 +14,7 @@ The goal is to implement the following `ls` options:
 
 - [x] `rls`: List all non-hidden files and directories in the current directory
 - [x] `rls -a`: List all files and directories, including hidden ones
-- [ ] `rls -A`: List all files and directories except `.` and `..`
+- [x] `rls -A`: List all files and directories except `.` and `..`
 - [x] `rls -l`: Use long listing format
 - [ ] `rls -h`: Print sizes in human-readable format (e.g., 1K, 234M, 2G)
 - [ ] `rls -R`: List subdirectories recursively
