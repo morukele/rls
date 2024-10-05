@@ -24,7 +24,7 @@ The goal is to implement the following `ls` options:
 - [ ] `rls -t`: Sort by modification time, newest first
 - [ ] `rls -X`: Sort alphabetically by entry extension
 - [ ] `rls -1`: List one file per line
-- [ ] `rls --color[=WHEN]`: Colorize the output; WHEN can be 'always', 'auto', or 'never'
+- [ ] `rls --color[=WHEN]`: Colorize the output; WHEN can be 'always' (default if ommited), 'auto', or 'never'
 - [ ] `rls -F`: Append indicator (one of */=>@|) to entries
 - [ ] `rls -i`: Print the index number of each file
 - [ ] `rls -n`: List numeric user and group IDs

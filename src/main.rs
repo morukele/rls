@@ -1,30 +1,6 @@
-use std::{env, fs, path::PathBuf};
-
-#[derive(Default, Debug)]
-struct Options {
-    show_all: bool,
-    long_format: bool,
-    almost_all: bool,
-    human_readable: bool,
-    recursive: bool,
-    directory: bool,
-    reverse: bool,
-    size_sort: bool, // Sort file by size, largest first
-    time_sort: bool, // Sort file by modification time, newest first
-    alphabetic_sort: bool,
-    one_file_per_line: bool,
-    color_when: bool,
-    classify: bool,
-    inode: bool,
-    numeric_uid_gid: bool,
-    append_indicator: bool,
-}
-
-impl Options {
-    fn new() -> Self {
-        Options::default()
-    }
-}
+use rls::functions::{list_all, parse_color_option};
+use rls::models::Options;
+use std::env;
 
 fn main() {
     // Collect arguments
@@ -55,7 +31,12 @@ fn main() {
             "-t" => options.time_sort = true,
             "-X" => options.alphabetic_sort = true,
             "-1" => options.one_file_per_line = true,
-            "--color[=when]" => options.color_when = true,
+            // option for the --color when
+            arg if arg.starts_with("--color") => {
+                if let Some(when) = parse_color_option(arg) {
+                    options.color_when = Some(when)
+                }
+            }
             "-F" => options.classify = true,
             "-i" => options.inode = true,
             "-n" => options.numeric_uid_gid = true,
@@ -73,37 +54,4 @@ fn main() {
         Ok(()) => {}
         Err(e) => eprintln!("Error listing directory: {}", e),
     };
-}
-
-/// A function to list all the entires in a given directory.
-///
-/// # Arguments
-///
-/// * `poth` - A `PathBuf`` of the directory file path.
-/// * `show_all` - A `bool` to show hidden file or not.
-///
-/// # Output
-///
-/// Result of unit type `()` is successful or `std::io::Error` if operation fails.
-fn list_all(directory_path: PathBuf, options: Options) -> Result<(), std::io::Error> {
-    let entries = fs::read_dir(directory_path)?; // propagate error to the function
-
-    // iterate through all entries
-    for entry in entries {
-        let entry = entry?;
-        let entry_name = entry
-            .file_name()
-            .to_str()
-            .expect("OS String cannot be converted to String")
-            .to_owned();
-
-        // Skip hidden files if not specified
-        if !options.show_all && entry_name.starts_with(".") {
-            continue;
-        }
-
-        println!("{}", entry_name);
-    }
-
-    Ok(())
 }
