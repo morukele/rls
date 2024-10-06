@@ -17,7 +17,7 @@ The goal is to implement the following `ls` options:
 - [x] `rls -A`: List all files and directories except `.` and `..`
 - [x] `rls -l`: Use long listing format
 - [x] `rls -h`: Print sizes in human-readable format (e.g., 1K, 234M, 2G)
-- [ ] `rls -R`: List subdirectories recursively
+- [x] `rls -R`: List subdirectories recursively
 - [x] `rls -d`: List directories themselves, not their contents
 - [ ] `rls -r`: Reverse order while sorting
 - [ ] `rls -S`: Sort by file size, largest first

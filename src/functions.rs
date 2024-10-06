@@ -61,7 +61,13 @@ pub fn list_all(directory_path: &PathBuf, options: &Options) -> Result<(), std::
         return Ok(());
     }
 
+    // Iterate though the contents if this -d flag is not set
     let entries = fs::read_dir(directory_path)?; // propagate error to the function
+
+    // If recursive "-R" flag is set, and not in the top level, display the directory name
+    if options.recursive {
+        println!("\n{}:", directory_path.display());
+    }
 
     // iterate through all entries
     for entry in entries {
@@ -80,6 +86,15 @@ pub fn list_all(directory_path: &PathBuf, options: &Options) -> Result<(), std::
             println!("{} {}", info, entry_name);
         } else {
             println!("{}", entry_name);
+        }
+
+        // if the entry is a directory, and the "-R" flag is set, recursively print the directory
+        if options.recursive && metadata.is_dir() {
+            let mut sub_dir_path = directory_path.clone(); // Cloning here because I don't want to temper with the value of the directory_path.
+            sub_dir_path.push(entry_name);
+
+            // Recursively call list_all on the subdirectory
+            list_all(&sub_dir_path, options)?;
         }
     }
 
