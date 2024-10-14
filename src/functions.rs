@@ -1,34 +1,15 @@
 use crate::{
-    Options, When, S_IRGRP, S_IROTH, S_IRUSR, S_IWGRP, S_IWOTH, S_IWUSR, S_IXGRP, S_IXOTH, S_IXUSR,
+    Options, S_IRGRP, S_IROTH, S_IRUSR, S_IWGRP, S_IWOTH, S_IWUSR, S_IXGRP, S_IXOTH, S_IXUSR,
 };
 use chrono::{DateTime, Local};
 use std::{
-    fs::{self, Metadata},
+    cmp::Reverse,
+    fs::{self, DirEntry, Metadata},
     os::unix::fs::MetadataExt,
     path::PathBuf,
     time::{Duration, UNIX_EPOCH},
 };
 use users::{get_group_by_gid, get_user_by_uid};
-
-/// A function to parsr the --color[=WHEN] into the color option
-pub fn parse_color_option(arg: &str) -> Option<When> {
-    if arg == "--color" {
-        Some(When::Always) // Defaults to "always" if no value is provided
-    } else if arg.starts_with("--color=") {
-        // strip the argument of it "--color=" characters to get the main color
-        arg.strip_prefix("--color=").map(|s| match s {
-            "always" => When::Always,
-            "auto" => When::Auto,
-            "never" => When::Never,
-            // Default to always if a wrong argument is passed.
-            // Consider a better way to handle this, maybe inducate to the user that
-            // the option is wrong and default of "always" is used.
-            _ => When::Always,
-        })
-    } else {
-        None
-    }
-}
 
 /// A function to list all the entires in a given directory.
 ///
@@ -69,9 +50,51 @@ pub fn list_all(directory_path: &PathBuf, options: &Options) -> Result<(), std::
         println!("\n{}:", directory_path.display());
     }
 
+    // collect directory iterators into a vector for sorting
+    let mut entries: Vec<DirEntry> = entries.filter_map(Result::ok).collect();
+
+    // if the -r flag is set
+    if options.reverse {
+        // had to convert to string here because &[u8] does not implement `Sized` Trait
+        entries.sort_by_key(|dir| Reverse(dir.path().to_string_lossy().to_string()));
+    }
+
+    // if the -S flag is set, sort by file size, largest first
+    if options.size_sort {
+        entries.sort_by_key(|dir| {
+            Reverse(
+                dir.metadata()
+                    .expect("Unable to get metadata from file")
+                    .size(),
+            )
+        });
+    }
+
+    // if the -t flag is set, sort by modification time, newest first
+    if options.time_sort {
+        entries.sort_by_key(|dir| {
+            Reverse(
+                dir.metadata()
+                    .expect("unable to get metadata from file")
+                    .modified()
+                    .expect("unable to get modification time from metadata"),
+            )
+        });
+    }
+
+    // if the -X flag is set, sort alphabetically by entry extension
+    if options.alphabetic_sort {
+        entries.sort_by_key(|dir| {
+            dir.path()
+                .extension()
+                .unwrap_or_default() // default here will be an empty string
+                .to_string_lossy()
+                .to_string()
+        });
+    }
+
     // iterate through all entries
     for entry in entries {
-        let entry = entry?;
         let entry_name = entry.file_name().to_string_lossy().into_owned();
         let metadata = entry.metadata()?; // extract file metadata
 
@@ -80,21 +103,21 @@ pub fn list_all(directory_path: &PathBuf, options: &Options) -> Result<(), std::
             continue;
         }
 
+        // if the entry is a directory, and the "-R" flag is set, recursively print the directory
+        if options.recursive && metadata.is_dir() {
+            let mut sub_dir_path = directory_path.clone(); // Cloning here because I don't want to temper with the value of the directory_path.
+            sub_dir_path.push(&entry_name);
+
+            // Recursively call list_all on the subdirectory
+            list_all(&sub_dir_path, options)?;
+        }
+
         if options.long_format {
             // list file in long format, also check if the human readable is set to true
             let info = list_long_format(&metadata, &options.human_readable);
             println!("{} {}", info, entry_name);
         } else {
             println!("{}", entry_name);
-        }
-
-        // if the entry is a directory, and the "-R" flag is set, recursively print the directory
-        if options.recursive && metadata.is_dir() {
-            let mut sub_dir_path = directory_path.clone(); // Cloning here because I don't want to temper with the value of the directory_path.
-            sub_dir_path.push(entry_name);
-
-            // Recursively call list_all on the subdirectory
-            list_all(&sub_dir_path, options)?;
         }
     }
 

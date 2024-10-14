@@ -1,4 +1,4 @@
-use rls::functions::{list_all, parse_color_option};
+use rls::functions::list_all;
 use rls::models::Options;
 use std::env;
 
@@ -30,17 +30,6 @@ fn main() {
             "-S" => options.size_sort = true,
             "-t" => options.time_sort = true,
             "-X" => options.alphabetic_sort = true,
-            "-1" => options.one_file_per_line = true,
-            // option for the --color when
-            arg if arg.starts_with("--color") => {
-                if let Some(when) = parse_color_option(arg) {
-                    options.color_when = Some(when)
-                }
-            }
-            "-F" => options.classify = true,
-            "-i" => options.inode = true,
-            "-n" => options.numeric_uid_gid = true,
-            "-p" => options.append_indicator = true,
             _ => println!(
                 "Unknown option: {}, listing all non hidden files and directories",
                 arg
