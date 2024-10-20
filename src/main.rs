@@ -37,8 +37,12 @@ fn main() {
         }
     }
 
+    // returns 0 for successful run, returns non-zero when an error is encountered
     match list_all(&directory_path, &options) {
-        Ok(()) => {}
-        Err(e) => eprintln!("Error listing directory: {}", e),
+        Ok(()) => std::process::exit(0),
+        Err(e) => {
+            eprintln!("Error listing directory: {}", e);
+            std::process::exit(1)
+        }
     };
 }

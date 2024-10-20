@@ -1,6 +1,4 @@
-use crate::{
-    Options, S_IRGRP, S_IROTH, S_IRUSR, S_IWGRP, S_IWOTH, S_IWUSR, S_IXGRP, S_IXOTH, S_IXUSR,
-};
+use crate::{Options, Permissions};
 use chrono::{DateTime, Local};
 use std::{
     cmp::Reverse,
@@ -138,14 +136,18 @@ pub fn list_long_format(metadata: &Metadata, human_readable: &bool) -> String {
     // This is done to avoid repetition
     fn get_permission_char(
         mode: &u32,
-        read: &u32,
-        write: &u32,
-        execute: &u32,
+        read: &Permissions,
+        write: &Permissions,
+        execute: &Permissions,
     ) -> (char, char, char) {
         (
-            if mode & read != 0 { 'r' } else { '-' },
-            if mode & write != 0 { 'w' } else { '-' },
-            if mode & execute != 0 { 'x' } else { '-' },
+            if mode & *read as u32 != 0 { 'r' } else { '-' },
+            if mode & *write as u32 != 0 { 'w' } else { '-' },
+            if mode & *execute as u32 != 0 {
+                'x'
+            } else {
+                '-'
+            },
         )
     }
 
@@ -156,9 +158,24 @@ pub fn list_long_format(metadata: &Metadata, human_readable: &bool) -> String {
 
     // Extract permissions from mode
     let mode = metadata.mode();
-    let user_perms = get_permission_char(&mode, &S_IRUSR, &S_IWUSR, &S_IXUSR);
-    let group_perms = get_permission_char(&mode, &S_IRGRP, &S_IWGRP, &S_IXGRP);
-    let other_perms = get_permission_char(&mode, &S_IROTH, &S_IWOTH, &S_IXOTH);
+    let user_perms = get_permission_char(
+        &mode,
+        &Permissions::S_IRUSR,
+        &Permissions::S_IWUSR,
+        &Permissions::S_IXUSR,
+    );
+    let group_perms = get_permission_char(
+        &mode,
+        &Permissions::S_IRGRP,
+        &Permissions::S_IWGRP,
+        &Permissions::S_IXGRP,
+    );
+    let other_perms = get_permission_char(
+        &mode,
+        &Permissions::S_IROTH,
+        &Permissions::S_IWOTH,
+        &Permissions::S_IXOTH,
+    );
 
     // Add permission to the result string
     result.push(user_perms.0);
@@ -213,7 +230,7 @@ fn human_readable_size(size: u64) -> String {
     }
 
     // Strip trailing ".0" if it's an integer
-    if size.fract() == 0.0 {
+    if size.fract() <= 0.01 {
         format!("{:.0}{}", size, units[unit])
     } else {
         format!("{:.1}{}", size, units[unit])
