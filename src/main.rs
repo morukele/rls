@@ -2,6 +2,9 @@ use rls::functions::list_all;
 use rls::models::Options;
 use std::env;
 
+const SUCCESS: i32 = 0;
+const ERROR: i32 = 1;
+
 fn main() {
     // Collect arguments
     let args: Vec<String> = env::args().collect();
@@ -38,24 +41,28 @@ fn main() {
                 );
 
                 // exit early
-                std::process::exit(0);
+                std::process::exit(SUCCESS);
+            }
+            "-v" | "--version" => {
+                println!("v0.1.1");
+                std::process::exit(SUCCESS);
             }
             _ => {
                 println!(
                     "Unknown option: {}, use the --help flag to see available options",
                     arg
                 );
-                std::process::exit(1)
+                std::process::exit(ERROR)
             }
         }
     }
 
     // returns 0 for successful run, returns non-zero when an error is encountered
     match list_all(&directory_path, &options) {
-        Ok(()) => std::process::exit(0),
+        Ok(()) => std::process::exit(ERROR),
         Err(e) => {
             eprintln!("Error listing directory: {}", e);
-            std::process::exit(1)
+            std::process::exit(SUCCESS)
         }
     };
 }
