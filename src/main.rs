@@ -48,7 +48,7 @@ fn main() {
                 std::process::exit(SUCCESS);
             }
             _ => {
-                println!(
+                eprintln!(
                     "Unknown option: {}, use the --help flag to see available options",
                     arg
                 );
