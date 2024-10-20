@@ -30,10 +30,23 @@ fn main() {
             "-S" => options.size_sort = true,
             "-t" => options.time_sort = true,
             "-X" => options.alphabetic_sort = true,
-            _ => println!(
-                "Unknown option: {}, listing all non hidden files and directories",
-                arg
-            ),
+            "--help" => {
+                println!("Welcome to r-ls, a Rust implementation of the ls utility in linux.");
+                println!("Usage: rls [Option]. (you can chain options)");
+                println!("The following options are available: ");
+                println!(" -a: List all files and directories, including hidden ones\n -A: List all files and directories except `.` and `..` \n -l: Use long listing format \n -h: Print sizes in human-readable format (e.g., 1K, 234M, 2G) \n -R: List subdirectories recursively \n -d: List directories themselves, not their contents \n -r: Reverse order while sorting \n -S: Sort by file size, largest first \n -t: Sort by modification time, newest first \n -X: Sort alphabetically by entry extension \n"
+                );
+
+                // exit early
+                std::process::exit(0);
+            }
+            _ => {
+                println!(
+                    "Unknown option: {}, use the --help flag to see available options",
+                    arg
+                );
+                std::process::exit(1)
+            }
         }
     }
 
